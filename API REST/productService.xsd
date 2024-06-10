@@ -1,0 +1,23 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://example.com/productService.xsd"
+            targetNamespace="http://example.com/productService.xsd"
+            elementFormDefault="qualified">
+
+    <!-- Importar o namespace do XML Schema -->
+    <xsd:import namespace="http://www.w3.org/2001/XMLSchema" schemaLocation="http://www.w3.org/2001/XMLSchema.xsd"/>
+
+    <!-- Definir o tipo do elemento 'productId' -->
+    <xsd:element name="productId" type="xsd:string"/>
+
+    <!-- Definir o tipo complexo 'ProductInfo' -->
+    <xsd:complexType name="ProductInfo">
+        <xsd:sequence>
+            <!-- Usar o prefixo 'xsd' para elementos primitivos -->
+            <xsd:element ref="xsd:string" name="productId"/>
+            <xsd:element ref="xsd:string" name="name"/>
+            <xsd:element ref="xsd:string" name="description"/>
+            <xsd:element ref="xsd:decimal" name="price"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>
