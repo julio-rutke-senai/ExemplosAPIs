@@ -9,11 +9,6 @@
   "author": "Julio Cezar Rutke",
   "license": "ISC",
   "dependencies": {
-    "@grpc/grpc-js": "^1.10.6",
-    "express": "^4.19.2",
-    "express-graphql": "^0.12.0",
-    "graphql": "^16.8.1",
-    "soap": "^1.0.0",
-    "strong-soap": "^4.0.4"
+    "express": "^4.19.2"
   }
 }

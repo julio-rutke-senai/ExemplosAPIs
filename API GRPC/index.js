@@ -40,5 +40,4 @@ server.bindAsync('localhost:50051', grpc.ServerCredentials.createInsecure(), (er
     return;
   }
   console.log('Server running on port:', port);
-  server.start();
 });

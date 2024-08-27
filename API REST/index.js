@@ -17,6 +17,7 @@ app.post('/tasks', (req, res) => {
 });
 
 app.put('/tasks/:id', (req, res) => {
+  console.log(req.headers.bicicleta)
   const id = req.params.id;
   const updatedTask = req.body;
   tasks = tasks.map(task => {

@@ -1,9 +1,12 @@
-const express = require('express');
-const { graphqlHTTP } = require('express-graphql');
-const { buildSchema } = require('graphql');
+const { ApolloServer, gql } = require('apollo-server');
+
+if (typeof localStorage === "undefined" || localStorage === null) {
+  var LocalStorage = require('node-localstorage').LocalStorage;
+  localStorage = new LocalStorage('./dados');
+}
 
 // Defina seu esquema GraphQL
-const schema = buildSchema(`
+const typeDefs = gql`
   type Book {
     id: ID!
     title: String!
@@ -27,7 +30,7 @@ const schema = buildSchema(`
     categories: [Category]
     bookByCategory(category: ID!): [Book]
   }
-`);
+`;
 
 // Dados de exemplo
 const booksData = [
@@ -45,25 +48,61 @@ const categoriesData = [
   { id: '2', name: 'Technology' },
 ];
 
-// Resolvedores para consultas
-const root = {
+// Resolvers
+const resolvers = {
+  
+  Query: {
     books: () => booksData.map(book => ({ ...book, author: authorsData.find(author => author.id === book.authorId), category: categoriesData.find(category => category.id === book.categoryId) })),
     authors: () => authorsData,
     categories: () => categoriesData,
     bookByCategory: ({category}) => booksData.map(book => ({ ...book, author: authorsData.find(author => author.id === book.authorId), category: categoriesData.find(category => category.id === book.categoryId) }))
                                             .filter(book => book.categoryId == category )
+    }
   };
   
-  // Configuração do servidor express com GraphQL
-  const app = express();
-  app.use('/graphql', graphqlHTTP({
-    schema: schema,
-    rootValue: root,
-    graphiql: true, // Habilita a interface gráfica para testar queries
-  }));
+
+  const addAuthor = (id, name) => {
+    authorsData = JSON.parse(localStorage.getItem("authors")) || []
+    const author = { id, name };
+    authorsData.push(author);
+
+    localStorage.setItem("authors", JSON.stringify(authorsData))
+    return author;
+};
+
+const listAuthors = () => {
+  authorsData = JSON.parse(localStorage.getItem("authors")) || []
+  return authorsData
+};
+
+
+const updateAuthorsName = (id, name) => {
+  authorsData = JSON.parse(localStorage.getItem("authors")) || []
+  const author = authorsData.find(a => a.id === id);
+  if (author) author.name = name;
+
+  localStorage.setItem("authors", JSON.stringify(authorsData))
+  return author;
+};
+
+const deleteAuthor = (id) => {
+  authorsData = JSON.parse(localStorage.getItem("authors")) || []
+  authorsData = authorsData.filter(a => a.id !== id);
+
+  localStorage.setItem("authors", JSON.stringify(authorsData))
+};
+ 
+// Servidor Apollo
+const server = new ApolloServer({ typeDefs, resolvers });
+
+server.listen(4000).then(({ url }) => {
+    console.log(`GraphQL Server rodando em ${url}`);
+});
   
-  const port = 3000;
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-  });
-  
+
+module.exports = {
+  addAuthor,
+  listAuthors,
+  updateAuthorsName,
+  deleteAuthor
+};
